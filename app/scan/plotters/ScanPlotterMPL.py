@@ -5,11 +5,14 @@ from app.scan.plotters.ScanPlotterABC import ScanPlotterABC
 
 class ScanPlotterMPL(ScanPlotterABC):
 
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, fig_ax=None, is_show=True):
+        self.fig, self.ax = fig_ax if fig_ax is not None else (None, None)
+        self.is_show = is_show
 
     def plot(self, scan):
-        ax = plt.figure().add_subplot(projection="3d")
+        if self.ax is None:
+            self.fig = plt.figure()
+            self.ax = self.fig.add_subplot(projection='3d')
         x, y, z, c = [], [], [], []
         for point in scan:
             x.append(point.x)
@@ -17,8 +20,10 @@ class ScanPlotterMPL(ScanPlotterABC):
             z.append(point.z)
             rgb = [rgb / 255 for rgb in point.color]
             c.append(rgb)
-        ax.scatter(x, y, z, c=c)
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
+        self.ax.scatter(x, y, z, c=c)
+        self.ax.set_xlabel('X')
+        self.ax.set_ylabel('Y')
         plt.axis('equal')
-        plt.show()
+        if self.is_show:
+            plt.show()
+        return self.fig, self.ax

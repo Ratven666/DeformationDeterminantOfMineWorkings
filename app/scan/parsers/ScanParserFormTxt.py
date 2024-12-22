@@ -1,4 +1,4 @@
-from app.base.ScanPoint import ScanPoint
+from app.scan.ScanPoint import ScanPoint
 from app.scan.parsers.ScanParserABC import ScanParserABC
 
 

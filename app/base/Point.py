@@ -8,4 +8,7 @@ class Point:
         self.z = z
 
     def __str__(self):
-        return f"Point (x={self.x}, y={self.y}, z={self.z})"
+        return f"Point (x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f})"
+
+    def __repr__(self):
+        return f"({self.x:.3f}, {self.y:.3f}, {self.z:.3f})"
