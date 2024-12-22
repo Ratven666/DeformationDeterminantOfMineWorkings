@@ -1,4 +1,5 @@
-from app.base.ScanPoint import ScanPoint
+from app.base.Point import Point
+from app.scan.ScanPoint import ScanPoint
 from app.scan.exporters.ScanExportersToTxt import ScanExportersToTxt
 from app.scan.parsers.ScanParserFormTxt import ScanParserFormTxt
 from app.scan.plotters.ScanPlotterMPL import ScanPlotterMPL
@@ -26,10 +27,16 @@ class Scan:
     def __str__(self):
         return f"{self.__class__.__name__} (scan_name={self.name}, num_of_point={len(self)}, borders={self.borders})"
 
-    def add_point(self, point):
+    def add_point(self, point, color=(0, 0, 0)):
         if isinstance(point, ScanPoint):
             self._points.append(point)
             self.borders = self._check_border(borders_dict=self.borders, point=point)
+        elif isinstance(point, Point):
+            s_point = ScanPoint(x=point.x,
+                                y=point.y,
+                                z=point.z,
+                                color=color)
+            self.add_point(s_point)
 
     def load_points_from_file(self, file_path, parser=ScanParserFormTxt):
         parser = parser(file_path)
@@ -54,7 +61,8 @@ class Scan:
 
     def plot(self, *args, plotter=ScanPlotterMPL, **kwargs):
         plotter = plotter(*args, **kwargs)
-        plotter.plot(scan=self)
+        fig_ax = plotter.plot(scan=self)
+        return fig_ax
 
     @staticmethod
     def _check_border(borders_dict, point):

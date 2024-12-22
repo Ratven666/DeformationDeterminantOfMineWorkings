@@ -1,5 +1,5 @@
 from app.base.Point import Point
-from app.base.ScanPoint import ScanPoint
+from app.scan.ScanPoint import ScanPoint
 
 
 class DeformationPoint(ScanPoint):
