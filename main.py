@@ -1,16 +1,15 @@
-# This is a sample Python script.
+from app.deformation.DeformationScan import DeformationScan
+from app.scan.Scan import Scan
+from app.scan.filters.ScanFilterDelimiter import ScanFilterDelimiter
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+scan = Scan("Test")
 
+scan.load_points_from_file(file_path="src/cl_1_cr_2.txt")
+print(scan)
+scan.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=20)
+print(scan)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def_scan = DeformationScan.create_def_scan_from_scan(scan=scan)
+print(def_scan)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# def_scan.plot()

@@ -1,2 +1,20 @@
 
 .idea/
+
+src/base_src/
+
+src/
+
+app/base/__pycache__/
+
+app/deformation/__pycache__/
+
+app/scan/__pycache__/
+
+app/scan/filters/__pycache__/
+
+app/scan/exporters/__pycache__/
+
+app/scan/parsers/__pycache__/
+
+app/scan/plotters/__pycache__/
