@@ -10,6 +10,6 @@ class ScanFilerByLineClosing(ScanFilterABC):
     def filter(self, scan):
         point_lst = []
         for point in scan:
-            if self.line.is_point_on_line(self.line.closest_point_on_line_3d(point)):
+            if self.line.is_point_on_obj(self.line.get_closest_point_obj(point)):
                 point_lst.append(point)
         return point_lst

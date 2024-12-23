@@ -24,44 +24,57 @@ line = Line(start_point=Point(x=42017.410,
             end_point=Point(x=42015.508,
                             y=54801.223,
                             z=115.960 - dz))
-sp_new = line.point_on_line_at_distance(1)
-ep_new = line.point_on_line_at_distance(3)
+sp_new = line.get_point_on_obj_at_distance(1)
+ep_new = line.get_point_on_obj_at_distance(3)
 line = Line(start_point=sp_new, end_point=ep_new)
 
 
 def_scan.filter_scan(filter_cls=ScanFilerByLineClosing, line=line)
 print(def_scan)
 
-# points = []
-# scan = Scan("Test2")
-# for point in def_scan:
-#     scan.add_point(line.closest_point_on_line_3d(point))
-#
-# print(scan)
-# fig_ax = scan.plot(is_show=False)
-# fig, ax = def_scan.plot(fig_ax=fig_ax, is_show=False)
-#
-# for point in def_scan:
-#     c_point = line.closest_point_on_line_3d(point)
-#     ax.plot([point.x, c_point.x], [point.y, c_point.y], [point.z, c_point.z])
-#
-# ax.plot([line.s_point.x, line.e_point.x], [line.s_point.y, line.e_point.y], [line.s_point.z, line.e_point.z])
-# plt.axis('equal')
-#
+points = []
+scan = Scan("Test2")
+for point in def_scan:
+    scan.add_point(line.get_closest_point_obj(point))
+
+print(scan)
+fig_ax = scan.plot(is_show=False)
+fig, ax = def_scan.plot(fig_ax=fig_ax, is_show=False)
+
+for point in def_scan:
+    c_point = line.get_closest_point_obj(point)
+    ax.plot([point.x, c_point.x], [point.y, c_point.y], [point.z, c_point.z])
+
+ax.plot([line.start_point.x, line.end_point.x], [line.start_point.y, line.end_point.y], [line.start_point.z, line.end_point.z])
+plt.axis('equal')
+
 # plt.show()
 
 
 scan = Scan("Test3")
 
 for point in def_scan:
-    distance = line.distance_from_start_point(point)
-    point = line.transform_to_new_coordinate_system(point)
+    distance = line.get_distance_from_start_point_to_point(point)
+    point = line.transform_point_coordinates_to_line_coordinate_system(point)
     point.z = distance
     scan.add_point(point)
 
 fig, ax = scan.plot(is_show=False)
 
-ax.plot([0, 0], [0, 0], [0, line.slope_distance])
+# ax.plot([0, 0], [0, 0], [0, line.slope_distance])
+plt.axis('equal')
+
+# plt.show()
+
+scan1 = Scan("!")
+
+for point in scan:
+    point = line.transform_points_to_new_coordinate_system([point])
+    print(point)
+    scan1.add_point(point[0])
+
+fig, ax = scan1.plot(is_show=False)
+ax.plot([line.start_point.x, line.end_point.x], [line.start_point.y, line.end_point.y], [line.start_point.z, line.end_point.z])
 plt.axis('equal')
 
 plt.show()

@@ -2,38 +2,61 @@ import math
 
 from matplotlib import pyplot as plt
 
+from app.base.Geometry import Geometry
 from app.base.Point import Point
 
 
-class Arc2D:
+class Arc2D(Geometry):
 
     def __init__(self, center_point: Point, radius, start_angle, end_angle):
         self.center_point = center_point
-        # self.center = (self.center_point.x, self.center_point.y)
         self.radius = radius
         self.start_angle = math.radians(start_angle)  # Преобразуем в радианы
         self.end_angle = math.radians(end_angle) # Преобразуем в радианы
         self.sweep_angle = math.radians(end_angle - start_angle)
-        self.start_point = self.get_point_at_angle(start_angle)
-        self.end_point = self.get_point_at_angle(end_angle)
+        super().__init__(start_point=self.get_point_at_angle(start_angle),
+                         end_point=self.get_point_at_angle(end_angle))
 
-    def get_point_at_angle(self, angle):
+    def get_distance_from_obj_to_point(self, point: Point, get_abs_value=True):
+        angle = math.atan2(point.y - self.center_point.y,
+                           point.x - self.center_point.x)
+        angle = angle if angle >= 0 else angle + math.tau
+        min_angle, max_angle = sorted([self.start_angle, self.end_angle])
+        if min_angle <= angle <= max_angle:
+            r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
+            distance = r - self.radius
+            if get_abs_value:
+                return abs(distance)
+            return distance
+        else:
+            raise ValueError(f"Точка {point} лежит вне дуги {repr(self)}")
+
+    def get_point_at_angle(self, angle_deg):
         """
         Возвращает координаты точки на дуге для заданного угла.
 
-        :param angle: Угол в радианах.
+        :param angle_deg: Угол в радианах.
         :return: Координаты точки (x, y).
         """
-        angle = math.radians(angle)
+        angle_rad = math.radians(angle_deg)
         min_angle, max_angle = sorted([self.start_angle, self.end_angle])
-        if min_angle <= angle <= max_angle:
-            x = self.center_point.x + self.radius * math.cos(angle)
-            y = self.center_point.y + self.radius * math.sin(angle)
+        if min_angle <= angle_rad <= max_angle:
+            x = self.center_point.x + self.radius * math.cos(angle_rad)
+            y = self.center_point.y + self.radius * math.sin(angle_rad)
             point = Point(x=x, y=y, z=self.center_point.z)
             return point
-        raise ValueError(f"Угол {math.degrees(angle)} лежит вне дуги {self.__repr__()}")
+        raise ValueError(f"Угол {angle_deg} лежит вне дуги {self.__repr__()}")
 
-    def is_point_on_arc(self, point: Point, tolerance=1e-4):
+    def get_point_on_obj_at_distance(self, distance):
+        sweep_angle = distance / self.radius
+        if self.start_angle < self.end_angle:
+            angle = self.start_angle + sweep_angle
+        else:
+            angle = self.start_angle - sweep_angle
+        angle = math.degrees(angle)
+        return self.get_point_at_angle(angle)
+
+    def is_point_on_obj(self, point: Point, tolerance=1e-4):
         r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
         if abs(self.radius - r) > tolerance:
             return False
@@ -43,8 +66,16 @@ class Arc2D:
         min_angle, max_angle = sorted([self.start_angle, self.end_angle])
         return min_angle <= angle <= max_angle
 
+    def get_closest_point_obj(self, point: Point):
+        angle = math.atan2(point.y - self.center_point.y,
+                           point.x - self.center_point.x)
+        angle = angle if angle >= 0 else angle + math.tau
+        min_angle, max_angle = sorted([self.start_angle, self.end_angle])
+        if min_angle <= angle <= max_angle:
+            return self.get_point_at_angle(math.degrees(angle))
+
     def get_distance_from_start_point_to_point(self, point: Point, tolerance=1e-4):
-        if not self.is_point_on_arc(point, tolerance):
+        if not self.is_point_on_obj(point, tolerance):
             raise ValueError(f"Точка {point} не лежит на дуге {repr(self)}")
         angle = math.atan2(point.y - self.center_point.y,
                            point.x - self.center_point.x)
@@ -55,7 +86,7 @@ class Arc2D:
     def get_arc_length(self):
         return self.get_distance_from_start_point_to_point(self.end_point)
 
-    def get_arc_points(self, num_points=100):
+    def get_points_on_obj(self, num_points=10):
         """
         Возвращает список точек на дуге для визуализации.
 
@@ -73,7 +104,7 @@ class Arc2D:
     def create_arc_from_center_point_with_start_and_end_points(cls, center_point: Point,
                                                                start_point: Point,
                                                                end_point: Point,
-                                                               tolerance=1e-4):
+                                                               tolerance=1e-2):
         r1 = ((start_point.x - center_point.x) ** 2 + (start_point.y - center_point.y) ** 2) ** 0.5
         r2 = ((end_point.x - center_point.x) ** 2 + (end_point.y - center_point.y) ** 2) ** 0.5
         if abs(r2 - r1) > tolerance:
@@ -86,6 +117,19 @@ class Arc2D:
         end_angle = end_angle if end_angle >= 0 else end_angle + 360
         arc = cls(center_point=center_point, radius=r1, start_angle=start_angle, end_angle=end_angle)
         return arc
+
+    def is_point_left_of_obj(self, point: Point):
+        r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
+        if self.start_angle < self.end_angle:
+            if r < self.radius:
+                return True
+            else:
+                return False
+        else:
+            if r < self.radius:
+                return False
+            else:
+                return True
 
     def __str__(self):
         return (f"Arc2D (central_point={self.center_point}, "
@@ -107,13 +151,13 @@ if __name__ == "__main__":
     sp = Point(x=0, y=2.1, z=0)
     ep = Point(x=1.7044, y=1.5477)
     arc = Arc2D.create_arc_from_center_point_with_start_and_end_points(center_point=cp,
-                                                                       start_point=sp,
-                                                                       end_point=ep)
+                                                                       start_point=ep,
+                                                                       end_point=sp)
     print(arc)
     point1 = arc.get_point_at_angle(60)
     # point2 = arc.get_point_at_angle(0)
 
-    arc_points = arc.get_arc_points(10)
+    arc_points = arc.get_points_on_obj(10)
     print(arc_points)
     x, y = [], []
     for point in arc_points:
@@ -127,9 +171,15 @@ if __name__ == "__main__":
     # ax.scatter(point2.x, point2.y)
 
     plt.axis('equal')
-    plt.show()
+    # plt.show()
 
-    print(arc.is_point_on_arc(point1))
+    print(arc.is_point_on_obj(point1))
     print(arc.get_distance_from_start_point_to_point(point1))
     print(arc.get_arc_length())
+
+    print(arc.is_point_left_of_obj(cp))
+    print(arc.get_point_on_obj_at_distance(1))
+
+    print(arc.get_distance_from_obj_to_point(Point(1, 1.9), get_abs_value=True))
+
 
