@@ -59,4 +59,9 @@ for point in def_scan:
     point.z = distance
     scan.add_point(point)
 
-scan.plot()
+fig, ax = scan.plot(is_show=False)
+
+ax.plot([0, 0], [0, 0], [0, line.slope_distance])
+plt.axis('equal')
+
+plt.show()

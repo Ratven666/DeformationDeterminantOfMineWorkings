@@ -101,32 +101,25 @@ class Line:
         point_on_line = self.closest_point_on_line_3d(point)
         point = np.array([point.x, point.y, point.z])
         point_on_line = np.array([point_on_line.x, point_on_line.y, point_on_line.z])
-        # O_prime = closest_point_on_line(P1, P2, Q)
-
         # Вектор направления оси z (совпадает с направлением прямой)
         z_prime = self._line_direction_np - self._start_line_point_np
         z_prime = z_prime / np.linalg.norm(z_prime)  # Нормализуем
-
         # Выбираем ось x' горизонтальной (перпендикулярной z' и вертикали)
         if z_prime[0] != 0 or z_prime[1] != 0:
             x_prime = np.array([-z_prime[1], z_prime[0], 0])  # Перпендикулярный вектор
         else:
             x_prime = np.array([0, -z_prime[2], z_prime[1]])  # Перпендикулярный вектор
         x_prime = x_prime / np.linalg.norm(x_prime)  # Нормализуем
-
         # Вычисляем ось y' как векторное произведение z' и x'
         y_prime = np.cross(z_prime, x_prime)
         y_prime = y_prime / np.linalg.norm(y_prime)  # Нормализуем
-
         # Перемещаем точку Q так, чтобы начало координат совпало с O'
         point_shifted = point - point_on_line
-
         # Вычисляем координаты точки Q в новой системе координат
         x_new = np.dot(x_prime, point_shifted)
         y_new = np.dot(y_prime, point_shifted)
         z_new = np.dot(z_prime, point_shifted)
         point = Point(*map(float, [x_new, y_new, z_new]))
-
         return point
 
     def __str__(self):
