@@ -74,16 +74,16 @@ class Arc2D(Geometry):
         if min_angle <= angle <= max_angle:
             return self.get_point_at_angle(math.degrees(angle))
 
-    def get_distance_from_start_point_to_point(self, point: Point, tolerance=1e-4):
-        if not self.is_point_on_obj(point, tolerance):
-            raise ValueError(f"Точка {point} не лежит на дуге {repr(self)}")
+    def get_distance_from_start_point_to_point(self, point: Point, tolerance=1e-2):
+        # if not self.is_point_on_obj(point, tolerance):
+        #     raise ValueError(f"Точка {point} не лежит на дуге {repr(self)}")
         angle = math.atan2(point.y - self.center_point.y,
                            point.x - self.center_point.x)
         angle = angle if angle >= 0 else angle + math.tau
         sweep_angle = angle - self.start_angle
         return abs(sweep_angle * self.radius)
 
-    def get_arc_length(self):
+    def get_total_length(self):
         return self.get_distance_from_start_point_to_point(self.end_point)
 
     def get_points_on_obj(self, num_points=10):

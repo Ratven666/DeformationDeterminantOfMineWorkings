@@ -18,3 +18,7 @@ app/scan/exporters/__pycache__/
 app/scan/parsers/__pycache__/
 
 app/scan/plotters/__pycache__/
+
+app/mine_workings/__pycache__/
+
+__pycache__/

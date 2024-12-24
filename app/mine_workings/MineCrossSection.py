@@ -21,7 +21,7 @@ class MineCrossSection:
         angle = angle if angle >= 0 else angle + math.tau
         return angle
 
-    def __init_elements_dict(self, geometry_elements):
+    def __init_elements_dict(self, geometry_elements: Geometry):
         elements_dict = {}
         for element in geometry_elements:
             start_angle = self._get_angle_to_point(element.start_point)
@@ -32,18 +32,40 @@ class MineCrossSection:
     def get_element_by_angle(self, angle_rad):
         if angle_rad == 0:
             angle_rad += 1e-10
+        angle_rad = angle_rad if angle_rad > 0 else angle_rad + math.tau
         for key, element in self.elements_dict.items():
-            if key[0] < angle_rad <= key[1]:
-                return element
+            if key[0] < angle_rad:
+                key2 = key[1] if key[1] != 0 else math.tau
+                if angle_rad <= key2:
+                    return element
 
-    def get_points_on_mcs(self, num_of_points_on_element=10):
+    def get_element_by_point(self, point: Point):
+        dx = point.x - self.center_point.x
+        dy = point.y - self.center_point.y
+        angle_rad = math.atan2(dy ,dx)
+        return self.get_element_by_angle(angle_rad)
+
+    def get_points_on_mcs(self, distance_step=0.1):
         points = []
         for element in self.elements_dict.values():
-            points.extend(element.get_points_on_obj(num_of_points_on_element))
+            current_distance = 0
+            element_length = element.get_total_length()
+            while current_distance < element_length:
+                points.append(element.get_point_on_obj_at_distance(current_distance))
+                current_distance += distance_step
         return points
 
-    def plot(self, color=(0, 0, 0), line_width=2):
-        fig, ax = plt.subplots()
+    def get_norm_distance_from_mcs_to_point(self, point: Point):
+        element = self.get_element_by_point(point)
+        distance = element.get_distance_from_obj_to_point(point=point, get_abs_value=False)
+        return distance
+
+    def plot(self, color=(0, 0, 0), line_width=2, fig_ax=None, is_show=True):
+        if fig_ax is None:
+            fig, ax = plt.subplots()
+        else:
+            fig, ax = fig_ax
+
         for element in self.elements_dict.values():
             if isinstance(element, Line):
                 ax.plot([element.start_point.x, element.end_point.x],
@@ -68,8 +90,10 @@ class MineCrossSection:
                     [element.start_point.y,
                      self.center_point.y,
                      element.end_point.y], c="r", linestyle="--")
-        plt.axis('equal')
-        plt.show()
+        if is_show:
+            plt.axis('equal')
+            plt.show()
+        return fig, ax
 
     def __str__(self):
         return f"{self.__class__.__name__} ({self.elements_dict})"
@@ -99,11 +123,22 @@ if __name__ == "__main__":
                                 end_point=Point(x=2.1, y=-2.1)),
                            Line(start_point=Point(x=2.1, y=-2.1),
                                 end_point=Point(x=2.1, y=0)))
-    mcs.plot()
-    print(mcs)
 
-    print(mcs.get_element_by_angle(math.radians(0)))
+    # print(mcs)
+
+    # print(mcs.get_element_by_angle(math.radians(0)))
     scan = Scan("!")
     for point in mcs.get_points_on_mcs():
         scan.add_point(point)
-    scan.plot()
+    # scan.plot()
+
+    point = Point(2.2, -1)
+    element = mcs.get_element_by_point(point)
+    print(element)
+    print(mcs.get_norm_distance_from_mcs_to_point(point))
+
+    fig, ax = mcs.plot(is_show=False)
+    ax.scatter(point.x, point.y)
+
+    plt.axis('equal')
+    plt.show()

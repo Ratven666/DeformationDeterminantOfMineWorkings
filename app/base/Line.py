@@ -32,10 +32,13 @@ class Line(Geometry):
 
     @property
     def azimuth(self):
-        azimuth = math.atan2(point.y - self.center_point.y,
-                           point.x - self.center_point.x)
+        azimuth = math.atan2(self.end_point.y - self.start_point.y,
+                             self.end_point.x - self.start_point.x)
         azimuth = azimuth if azimuth >= 0 else azimuth + math.tau
         return azimuth
+
+    def get_total_length(self):
+        return self.slope_distance
 
     # def distance_point_to_line_3d(self, point: Point):
     #     point = np.array([point.x, point.y, point.z])
@@ -83,7 +86,8 @@ class Line(Geometry):
 
     def get_point_on_obj_at_distance(self, distance):
         direction_vector = self._line_direction_np - self._start_line_point_np
-        length = np.linalg.norm(direction_vector)
+        # length = np.linalg.norm(direction_vector)
+        length = self.get_total_length()
         if distance > length:
             raise ValueError("Заданное расстояние превышает длину отрезка.")
         normalized_vector = direction_vector / length
@@ -198,4 +202,6 @@ if __name__ == "__main__":
     print(line.get_distance_from_obj_to_point(point))
     print(line.get_closest_point_obj(point))
     print(line.is_point_left_of_obj(point))
+
+    print(line.get_points_on_obj())
 

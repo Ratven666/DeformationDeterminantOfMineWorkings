@@ -36,3 +36,7 @@ class Geometry(ABC):
     @abstractmethod
     def get_points_on_obj(self, num_points=10):
         pass
+
+    @abstractmethod
+    def get_total_length(self):
+        pass
