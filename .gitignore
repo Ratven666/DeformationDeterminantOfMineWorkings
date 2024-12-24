@@ -22,3 +22,5 @@ app/scan/plotters/__pycache__/
 app/mine_workings/__pycache__/
 
 __pycache__/
+
+uglova.py
