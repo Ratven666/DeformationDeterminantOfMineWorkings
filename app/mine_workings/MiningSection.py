@@ -128,7 +128,8 @@ class MiningSection:
         Z = np.array(Z).reshape(-1, num_steps)
 
         # Визуализация поверхности
-        ax.plot_surface(X, Y, Z, cmap='viridis', edgecolor='none')
+        # ax.plot_surface(X, Y, Z, cmap='ocean', edgecolor='none', alpha=0.5)
+        ax.plot_surface(X, Y, Z, edgecolor='none', alpha=0.5)
 
         # Настройка графика
         ax.set_title("Замкнутая поверхность по последовательным сечениям")

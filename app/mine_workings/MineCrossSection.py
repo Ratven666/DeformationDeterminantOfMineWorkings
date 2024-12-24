@@ -57,6 +57,8 @@ class MineCrossSection:
 
     def get_norm_distance_from_mcs_to_point(self, point: Point):
         element = self.get_element_by_point(point)
+        if element is None:
+            return 0
         distance = element.get_distance_from_obj_to_point(point=point, get_abs_value=False)
         return distance
 

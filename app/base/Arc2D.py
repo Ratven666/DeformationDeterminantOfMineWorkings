@@ -22,14 +22,19 @@ class Arc2D(Geometry):
                            point.x - self.center_point.x)
         angle = angle if angle >= 0 else angle + math.tau
         min_angle, max_angle = sorted([self.start_angle, self.end_angle])
-        if min_angle <= angle <= max_angle:
-            r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
-            distance = r - self.radius
-            if get_abs_value:
-                return abs(distance)
-            return distance
-        else:
-            raise ValueError(f"Точка {point} лежит вне дуги {repr(self)}")
+        # if min_angle <= angle <= max_angle:
+        #     r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
+        #     distance = r - self.radius
+        #     if get_abs_value:
+        #         return abs(distance)
+        #     return distance
+        # else:
+        #     raise ValueError(f"Точка {point} лежит вне дуги angle={math.degrees(angle)} - {repr(self)}")
+        r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5
+        distance = r - self.radius
+        if get_abs_value:
+            return abs(distance)
+        return distance
 
     def get_point_at_angle(self, angle_deg):
         """

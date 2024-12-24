@@ -23,6 +23,8 @@ class MineWorking:
 
     def get_norm_distance_from_mw_to_point(self, point: Point):
         ms = self.get_mining_section_to_point(point)
+        if ms is None:
+            return 0
         distance = ms.get_norm_distance_from_ms_to_point(point=point)
         return distance
 
@@ -73,7 +75,7 @@ if __name__ == "__main__":
 
     mw = MineWorking(line1, arc1, line2, arc2, line3)
 
-    # mw.plot()
+    mw.plot()
     p = Point(x=151, y=122)
 
     dist = mw.get_norm_distance_from_mw_to_point(p)
