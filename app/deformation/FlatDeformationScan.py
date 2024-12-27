@@ -14,9 +14,9 @@ class FlatDeformationScan(DeformationScan):
         self.mining_working = None
         self.rbf = None
 
-    def __str__(self):
-        return (f"{self.__class__.__name__} (scan_name={self.name}, "
-                f"num_of_point={len(self)}, borders={self.borders})")
+    # def __str__(self):
+    #     return (f"{self.__class__.__name__} (scan_name={self.name}, "
+    #             f"num_of_point={len(self)}, borders={self.borders})")
 
     @classmethod
     def create_flat_def_scan_from_mining_working_def_scan(cls, def_scan: DeformationScan,
@@ -31,4 +31,6 @@ class FlatDeformationScan(DeformationScan):
             if point is None:
                 continue
             flat_def_scan.add_point(point)
+        flat_def_scan._calk_deformation_limits()
+        flat_def_scan._calk_deformations_mse()
         return flat_def_scan

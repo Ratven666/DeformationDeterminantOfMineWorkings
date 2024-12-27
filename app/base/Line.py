@@ -89,7 +89,8 @@ class Line(Geometry):
         # length = np.linalg.norm(direction_vector)
         length = self.get_total_length()
         if distance > length:
-            raise ValueError("Заданное расстояние превышает длину отрезка.")
+            return self.get_point_on_obj_at_distance(self.get_total_length())
+            # raise ValueError("Заданное расстояние превышает длину отрезка.")
         normalized_vector = direction_vector / length
         point = self._start_line_point_np + distance * normalized_vector
         point = Point(*map(float, point))
