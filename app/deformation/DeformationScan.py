@@ -28,7 +28,7 @@ class DeformationScan(Scan):
 
     @classmethod
     def create_def_scan_from_scan(cls, scan: Scan):
-        def_scan = cls(scan_name=scan.name)
+        def_scan = cls(scan_name=f"Def_Scan_{scan.name}")
         for point in scan:
             def_scan.add_point(point)
         return def_scan

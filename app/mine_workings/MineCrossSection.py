@@ -26,6 +26,8 @@ class MineCrossSection:
         for element in geometry_elements:
             start_angle = self._get_angle_to_point(element.start_point)
             end_angle = self._get_angle_to_point(element.end_point)
+            if end_angle == 0:
+                end_angle = math.tau
             elements_dict[(start_angle, end_angle)] = element
         return elements_dict
 
@@ -44,6 +46,15 @@ class MineCrossSection:
         dy = point.y - self.center_point.y
         angle_rad = math.atan2(dy ,dx)
         return self.get_element_by_angle(angle_rad)
+
+    def get_length_on_mcs_for_point(self, point: Point):
+        point_angle_rad = self._get_angle_to_point(point)
+        point_element = self.get_element_by_point(point)
+        el_dist = point_element.get_distance_from_start_point_to_point(point)
+        for angles_tuple, element in self.elements_dict.items():
+            if angles_tuple[1] < point_angle_rad:
+                el_dist += element.get_total_length()
+        return el_dist
 
     def get_points_on_mcs(self, distance_step=0.1):
         points = []
@@ -134,7 +145,7 @@ if __name__ == "__main__":
         scan.add_point(point)
     # scan.plot()
 
-    point = Point(2.2, -1)
+    point = Point(2.2, -0.00000)
     element = mcs.get_element_by_point(point)
     print(element)
     print(mcs.get_norm_distance_from_mcs_to_point(point))
@@ -143,4 +154,7 @@ if __name__ == "__main__":
     ax.scatter(point.x, point.y)
 
     plt.axis('equal')
-    plt.show()
+    # plt.show()
+
+    print(mcs.get_length_on_mcs_for_angle(-1e-10))
+

@@ -21,6 +21,16 @@ class MineWorking:
             if ms.is_point_in_mining_section(point):
                 return ms
 
+    def get_distance_from_start_point_to_point(self, point: Point):
+        distance = 0
+        for ms in self.mining_sections:
+            if ms.is_point_in_mining_section(point):
+                distance += ms.base_line.get_distance_from_start_point_to_point(point)
+                return distance
+            distance += ms.base_line.get_total_length()
+        return -1
+        # raise ValueError(f"Точка {point} не принадлежит выработке {self}!")
+
     def get_norm_distance_from_mw_to_point(self, point: Point):
         ms = self.get_mining_section_to_point(point)
         if ms is None:
