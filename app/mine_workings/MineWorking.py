@@ -31,6 +31,15 @@ class MineWorking:
         return -1
         # raise ValueError(f"Точка {point} не принадлежит выработке {self}!")
 
+    def get_ms_elm_for_distance(self, distance):
+        current_dist = 0
+        distance_left = distance
+        for ms in self.mining_sections:
+            current_dist += ms.base_line.get_total_length()
+            if distance <= current_dist:
+                return ms, distance_left
+            distance_left = distance - current_dist
+
     def get_norm_distance_from_mw_to_point(self, point: Point):
         ms = self.get_mining_section_to_point(point)
         if ms is None:

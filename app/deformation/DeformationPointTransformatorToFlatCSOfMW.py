@@ -13,7 +13,6 @@ class DeformationPointTransformatorToFlatCSOfMW:
         self.length_270 = self.mcs.get_length_on_mcs_for_point(Point(x=-0, y=-1000))
         self.length_360 = self.mcs.get_length_on_mcs_for_point(Point(x=1000, y=-1e-10))
 
-
     def recalculate_point_in_ms_cs(self, point: DeformationPoint):
         mcs_distance = point.y
         if 0 < mcs_distance <= self.length_90:
@@ -26,12 +25,14 @@ class DeformationPointTransformatorToFlatCSOfMW:
 
     def transform_to_flat_cs(self, point: DeformationPoint, get_point_in_mw_cs=False):
         mw_distance = self.mining_working.get_distance_from_start_point_to_point(point)
-        if mw_distance == -1:
+        if mw_distance == -1 or None:
             return None
         ms = self.mining_working.get_mining_section_to_point(point)
         tr_point = ms.transform_point_to_mcs_coord_system(point)
         try:
             mcs_distance = self.mining_working.mcs.get_length_on_mcs_for_point(tr_point)
+            if mcs_distance is None:
+                return None
         except ValueError:
             return None
         new_x = mw_distance

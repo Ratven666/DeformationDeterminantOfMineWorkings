@@ -64,6 +64,17 @@ class MiningSection:
         distance = self.mcs.get_norm_distance_from_mcs_to_point(point=tr_point)
         return distance
 
+    def calculate_point_on_line_form_mcs_point(self, mcs_point: Point, distance):
+        mcs_point = Point(x=mcs_point.x, y=mcs_point.z, z=mcs_point.y)
+        point = self.base_line.get_point_on_obj_at_distance(distance)
+        next_point = self.__get_next_point_on_base_line(point)
+        line = Line(start_point=point, end_point=next_point)
+        azimuth = line.azimuth + math.pi / 2
+        new_x = point.x + mcs_point.x * math.cos(azimuth) - mcs_point.y * math.sin(azimuth)
+        new_y = point.y + mcs_point.x * math.sin(azimuth) + mcs_point.y * math.cos(azimuth)
+        new_z = point.z + mcs_point.z
+        return Point(x=new_x, y=new_y, z=new_z)
+
     def _get_mcs_for_point_on_line(self, point: Point):
         next_point = self.__get_next_point_on_base_line(point)
         line = Line(start_point=point, end_point=next_point)

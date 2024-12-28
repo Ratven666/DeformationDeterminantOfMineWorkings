@@ -18,8 +18,8 @@ scan2.load_points_from_file(file_path="src/base_src/Облако 160824.xyz")
 print(scan1)
 print(scan2)
 
-scan1.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=100)
-scan2.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=100)
+scan1.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=10)
+scan2.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=10)
 print(scan1)
 print(scan2)
 
@@ -66,10 +66,10 @@ print(def_scan2)
 
 flat_ds1 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan1,
                                                                                  mining_working=mw,
-                                                                                 get_point_in_mw_cs=True)
+                                                                                 get_point_in_mw_cs=False)
 flat_ds2 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan2,
                                                                                  mining_working=mw,
-                                                                                 get_point_in_mw_cs=True)
+                                                                                 get_point_in_mw_cs=False)
 # flat_ds.plot(plotter=DeformationScanPlotterMPL)
 print(flat_ds1)
 print(flat_ds2)
@@ -77,6 +77,10 @@ print(flat_ds2)
 flat_ds2.calculate_deformation(deformation_calculator=DeformationCalculatorBetweenTwoFlatDefScan,
                                base_scan=flat_ds1)
 
-flat_ds2.plot(plotter=DeformationScanPlotterMPL)
+# flat_ds2.plot(plotter=DeformationScanPlotterMPL)
 print(flat_ds1)
 print(flat_ds2)
+
+def_scan3 = flat_ds2.calculate_def_scan_by_base_obj()
+print(def_scan3)
+def_scan3.plot(plotter=DeformationScanPlotterMPL)

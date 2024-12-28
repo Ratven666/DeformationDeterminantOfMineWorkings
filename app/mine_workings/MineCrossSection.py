@@ -13,6 +13,7 @@ class MineCrossSection:
 
     def __init__(self, center_point: Point, *geometry_elements: Geometry):
         self.center_point = center_point
+        self.geometry_elements = geometry_elements
         self.elements_dict = self.__init_elements_dict(geometry_elements)
 
     def _get_angle_to_point(self, point: Point):
@@ -50,6 +51,8 @@ class MineCrossSection:
     def get_length_on_mcs_for_point(self, point: Point):
         point_angle_rad = self._get_angle_to_point(point)
         point_element = self.get_element_by_point(point)
+        if point_element is None:
+            return
         el_dist = point_element.get_distance_from_start_point_to_point(point)
         for angles_tuple, element in self.elements_dict.items():
             if angles_tuple[1] < point_angle_rad:
@@ -72,6 +75,15 @@ class MineCrossSection:
             return 0
         distance = element.get_distance_from_obj_to_point(point=point, get_abs_value=False)
         return distance
+
+    def get_point_om_mcs_dy_distance(self, distance):
+        current_dist = 0
+        distance_left = distance
+        for elm in self.geometry_elements:
+            current_dist += elm.get_total_length()
+            if distance <= current_dist:
+                return elm.get_point_on_obj_at_distance(distance_left)
+            distance_left = distance - current_dist
 
     def plot(self, color=(0, 0, 0), line_width=2, fig_ax=None, is_show=True):
         if fig_ax is None:
@@ -147,14 +159,21 @@ if __name__ == "__main__":
 
     point = Point(2.2, -0.00000)
     element = mcs.get_element_by_point(point)
+
+    point_on_mcs1 = mcs.get_point_om_mcs_dy_distance(3)
+    point_on_mcs2 = mcs.get_point_om_mcs_dy_distance(2)
+
+
     print(element)
     print(mcs.get_norm_distance_from_mcs_to_point(point))
 
     fig, ax = mcs.plot(is_show=False)
     ax.scatter(point.x, point.y)
-
+    ax.scatter(point_on_mcs1.x, point_on_mcs1.y)
+    ax.scatter(point_on_mcs2.x, point_on_mcs2.y)
     plt.axis('equal')
-    # plt.show()
+    plt.show()
 
-    print(mcs.get_length_on_mcs_for_angle(-1e-10))
+
+
 
