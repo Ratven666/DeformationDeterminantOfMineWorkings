@@ -29,6 +29,7 @@ class DeformationScanPlotterMPL(ScanPlotterABC):
             z.append(point.z)
             c.append(point.deformation)
         self.ax.scatter(x, y, z, c=c, cmap='seismic', norm=norm)
+        # self.ax.scatter(x, y, z, c=c, cmap='Spectral', norm=norm)
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         if self.plot_base_obj and self.base_obj is not None:

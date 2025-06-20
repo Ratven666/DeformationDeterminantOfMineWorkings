@@ -36,7 +36,7 @@ class Arc2D(Geometry):
             return abs(distance)
         return distance
 
-    def get_point_at_angle(self, angle_deg):
+    def get_point_at_angle(self, angle_deg, point_on_object=True):
         """
         Возвращает координаты точки на дуге для заданного угла.
 
@@ -45,21 +45,27 @@ class Arc2D(Geometry):
         """
         angle_rad = math.radians(angle_deg)
         min_angle, max_angle = sorted([self.start_angle, self.end_angle])
-        if min_angle <= angle_rad <= max_angle:
+        if point_on_object:
+            if min_angle <= angle_rad <= max_angle:
+                x = self.center_point.x + self.radius * math.cos(angle_rad)
+                y = self.center_point.y + self.radius * math.sin(angle_rad)
+                point = Point(x=x, y=y, z=self.center_point.z)
+                return point
+            raise ValueError(f"Угол {angle_deg} лежит вне дуги {self.__repr__()}")
+        else:
             x = self.center_point.x + self.radius * math.cos(angle_rad)
             y = self.center_point.y + self.radius * math.sin(angle_rad)
             point = Point(x=x, y=y, z=self.center_point.z)
             return point
-        raise ValueError(f"Угол {angle_deg} лежит вне дуги {self.__repr__()}")
 
-    def get_point_on_obj_at_distance(self, distance):
+    def get_point_on_obj_at_distance(self, distance, point_on_object=True):
         sweep_angle = distance / self.radius
         if self.start_angle < self.end_angle:
             angle = self.start_angle + sweep_angle
         else:
             angle = self.start_angle - sweep_angle
         angle = math.degrees(angle)
-        return self.get_point_at_angle(angle)
+        return self.get_point_at_angle(angle, point_on_object=point_on_object)
 
     def is_point_on_obj(self, point: Point, tolerance=1e-4):
         r = ((point.x - self.center_point.x) ** 2 + (point.y - self.center_point.y) ** 2) ** 0.5

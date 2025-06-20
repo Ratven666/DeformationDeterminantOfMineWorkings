@@ -24,3 +24,5 @@ app/mine_workings/__pycache__/
 __pycache__/
 
 uglova.py
+
+.DS_Store

@@ -84,13 +84,17 @@ class Line(Geometry):
         t = np.dot(vector_sp0p, vector_sp0ep) / np.dot(vector_sp0ep, vector_sp0ep)
         return 0 <= t <= 1
 
-    def get_point_on_obj_at_distance(self, distance):
+    def get_point_on_obj_at_distance(self, distance, point_on_object=True):
         direction_vector = self._line_direction_np - self._start_line_point_np
         # length = np.linalg.norm(direction_vector)
         length = self.get_total_length()
-        if distance > length:
-            return self.get_point_on_obj_at_distance(self.get_total_length())
-            # raise ValueError("Заданное расстояние превышает длину отрезка.")
+        if point_on_object:
+            if distance > length:
+                return self.start_point
+                # return self.get_point_on_obj_at_distance(self.get_total_length())
+                # raise ValueError("Заданное расстояние превышает длину отрезка.")
+            if distance < 0:
+                return self.start_point
         normalized_vector = direction_vector / length
         point = self._start_line_point_np + distance * normalized_vector
         point = Point(*map(float, point))
@@ -165,7 +169,7 @@ class Line(Geometry):
         cross_product = np.cross(vector_P1Q, vector_P1P2)
         # Проверяем z-координату векторного произведения
         if cross_product[2] > 0:
-            return False  # Точка слева от прямой
+            return False  # Точка слева от прямой               ????????????????????
         else:
             return True  # Точка справа от прямой
 

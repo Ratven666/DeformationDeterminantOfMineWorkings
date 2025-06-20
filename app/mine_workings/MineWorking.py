@@ -10,11 +10,38 @@ from app.mine_workings.MiningSection import MiningSection
 
 class MineWorking:
 
-    def __init__(self, *base_lines: Geometry, mine_cross_section=MCS):
-        self.mining_sections = [MiningSection(base_line=base_line, mine_cross_section=mine_cross_section)
-                                for base_line in base_lines]
+    def __init__(self, *base_lines: Geometry, mine_cross_section=MCS, name=None, offsets=None):
         self._base_lines = base_lines
         self.mcs = mine_cross_section
+        self.name = name
+        self.offsets = offsets
+        # self.mining_sections = [MiningSection(base_line=base_line, mine_cross_section=mine_cross_section)
+        #                         for base_line in base_lines]
+        self.mining_sections = self.__init_mining_sections()
+
+    def __init_mining_sections(self):
+        if isinstance(self.offsets, (int, float)):
+            base_lines_with_offsets = []
+            for base_line in self._base_lines:
+                new_start_point = base_line.get_point_on_obj_at_distance(distance=-self.offsets, point_on_object=False)
+                new_end_point = base_line.get_point_on_obj_at_distance(distance=base_line.get_total_length() +
+                                                                                self.offsets,
+                                                                       point_on_object=False)
+                if isinstance(base_line, Arc2D):
+                    new_base_line = Arc2D.create_arc_from_center_point_with_start_and_end_points(
+                        center_point=base_line.center_point,
+                        start_point=new_start_point,
+                        end_point=new_end_point)
+                if isinstance(base_line, Line):
+                    new_base_line = Line(start_point=new_start_point, end_point=new_end_point)
+                else:
+                    raise ValueError()
+                base_lines_with_offsets.append(new_base_line)
+        else:
+            base_lines_with_offsets = self._base_lines
+        mining_sections = [MiningSection(base_line=base_line, mine_cross_section=self.mcs)
+                           for base_line in base_lines_with_offsets]
+        return mining_sections
 
     def get_mining_section_to_point(self, point: Point):
         for ms in self.mining_sections:
@@ -65,7 +92,6 @@ class MineWorking:
 
 
 if __name__ == "__main__":
-
     spl1 = Point(x=100, y=100, z=-25)
     epl1 = Point(x=150, y=100)
     line1 = Line(start_point=spl1, end_point=epl1)

@@ -1,4 +1,5 @@
 from app.deformation.DeformationPoint import DeformationPoint
+from app.deformation.filters.DeformationScanFilterByType import DeformationScanFilterByType
 from app.scan.Scan import Scan
 
 
@@ -34,9 +35,7 @@ class DeformationScan(Scan):
         return def_scan
 
     def _calk_deformation_limits(self):
-        def_lst = []
-        for point in self:
-            def_lst.append(point.deformation)
+        def_lst = [point.deformation for point in self]
         self.min_deformation = min(def_lst)
         self.max_deformation = max(def_lst)
 
@@ -48,8 +47,12 @@ class DeformationScan(Scan):
         mse = (sum_vv / len(vv)) ** 0.5
         self.mse = mse
 
+    def refresh_def(self):
+        self._calk_deformation_limits()
+        self._calk_deformations_mse()
+
     def calculate_deformation(self, deformation_calculator, *args, **kwargs):
         deformation_calculator = deformation_calculator(*args, **kwargs)
         deformation_calculator.calculate(def_scan=self)
-        self._calk_deformation_limits()
-        self._calk_deformations_mse()
+        self.filter_scan(filter_cls=DeformationScanFilterByType)
+        self.refresh_def()

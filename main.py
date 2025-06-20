@@ -14,7 +14,7 @@ scan = Scan("Test")
 
 scan.load_points_from_file(file_path="src/cl_1_cr_2.txt")
 print(scan)
-scan.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=50)
+scan.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=10)
 print(scan)
 
 def_scan = DeformationScan.create_def_scan_from_scan(scan=scan)

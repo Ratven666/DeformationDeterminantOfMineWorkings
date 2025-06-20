@@ -22,7 +22,7 @@ class Geometry(ABC):
         pass
 
     @abstractmethod
-    def get_point_on_obj_at_distance(self, distance):
+    def get_point_on_obj_at_distance(self, distance, point_on_object=True):
         pass
 
     @abstractmethod
