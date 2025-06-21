@@ -1,5 +1,5 @@
 from app.deformation.DeformationScan import DeformationScan
-from app.deformation.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
+from app.deformation.calculators.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
 
 
 class DeformationScanSeparatorByMW:

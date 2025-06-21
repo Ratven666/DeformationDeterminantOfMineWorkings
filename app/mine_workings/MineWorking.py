@@ -10,17 +10,15 @@ from app.mine_workings.MiningSection import MiningSection
 
 class MineWorking:
 
-    def __init__(self, *base_lines: Geometry, mine_cross_section=MCS, name=None, offsets=None):
+    def __init__(self, *base_lines: Geometry, mine_cross_section=MCS, name=None, offsets=0):
         self._base_lines = base_lines
         self.mcs = mine_cross_section
         self.name = name
         self.offsets = offsets
-        # self.mining_sections = [MiningSection(base_line=base_line, mine_cross_section=mine_cross_section)
-        #                         for base_line in base_lines]
         self.mining_sections = self.__init_mining_sections()
 
     def __init_mining_sections(self):
-        if isinstance(self.offsets, (int, float)):
+        if self.offsets != 0:
             base_lines_with_offsets = []
             for base_line in self._base_lines:
                 new_start_point = base_line.get_point_on_obj_at_distance(distance=-self.offsets, point_on_object=False)
@@ -32,7 +30,7 @@ class MineWorking:
                         center_point=base_line.center_point,
                         start_point=new_start_point,
                         end_point=new_end_point)
-                if isinstance(base_line, Line):
+                elif isinstance(base_line, Line):
                     new_base_line = Line(start_point=new_start_point, end_point=new_end_point)
                 else:
                     raise ValueError()
@@ -52,9 +50,13 @@ class MineWorking:
         distance = 0
         for ms in self.mining_sections:
             if ms.is_point_in_mining_section(point):
+                # distance += ms.base_line.get_distance_from_start_point_to_point(point)
                 distance += ms.base_line.get_distance_from_start_point_to_point(point)
+                distance -= self.offsets
                 return distance
+            # distance += ms.base_line.get_total_length()
             distance += ms.base_line.get_total_length()
+            distance -= 2 * self.offsets
         return -1
         # raise ValueError(f"Точка {point} не принадлежит выработке {self}!")
 
@@ -62,7 +64,9 @@ class MineWorking:
         current_dist = 0
         distance_left = distance
         for ms in self.mining_sections:
+            # current_dist += ms.base_line.get_total_length()
             current_dist += ms.base_line.get_total_length()
+            current_dist -= 2 * self.offsets
             if distance <= current_dist:
                 return ms, distance_left
             distance_left = distance - current_dist

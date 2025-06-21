@@ -12,13 +12,14 @@ class Point:
         self.id_ = self.last_id
 
     def __hash__(self):
-        return self.id_
+        # return self.id_
+        # return int(self.x * self.y * self.z)
+        return hash(repr(self))
 
     def __eq__(self, other):
         return self.x - other.x == 1e-5 and \
                self.y - other.y == 1e-5 and \
                self.z - other.z == 1e-5
-
 
     def __str__(self):
         return f"Point (id={self.id_} x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f})"

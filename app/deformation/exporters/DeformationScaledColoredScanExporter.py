@@ -1,12 +1,5 @@
-import math
-import os
-from copy import deepcopy
-
 from matplotlib import pyplot as plt
-from matplotlib.colors import TwoSlopeNorm
-
-from app.deformation.FlatDeformationScan import FlatDeformationScan
-from app.deformation.DeformationScan import DeformationScan
+from matplotlib.colors import TwoSlopeNorm, LinearSegmentedColormap
 
 
 class DeformationScaledColoredScanExporter:
@@ -23,10 +16,24 @@ class DeformationScaledColoredScanExporter:
                 file.write(point_str)
 
     @staticmethod
-    def _init_point_colors_by_deformation(scan):
+    def get_c_map():
+        colors = [
+            (0.0, (1.0, 0.0, 0.0)),
+            (0.4, (1.0, 1.0, 0.0)),
+            (0.45, (0.0, 1.0, 0.0)),
+            (0.55, (0.0, 1.0, 0.0)),
+            (0.6, (0.0, 1.0, 1.0)),
+            (1.0, (0.0, 0.0, 1.0)),
+        ]
+        cmap_smooth = LinearSegmentedColormap.from_list("R_Y_G_C_B", colors)
+        return cmap_smooth
+
+    def _init_point_colors_by_deformation(self, scan):
         deformation = [point.deformation for point in scan]
         norm = TwoSlopeNorm(vcenter=0, vmin=min(deformation), vmax=max(deformation))
-        colors = plt.cm.seismic(norm(deformation))
+        # colors = plt.cm.seismic(norm(deformation))
+        cmap = self.get_c_map()
+        colors = cmap(norm(deformation))
         for idx, point in enumerate(scan):
             color = [int(rgb * 255) for rgb in colors[idx][:3]]
             point.color = color

@@ -3,14 +3,18 @@ from copy import deepcopy
 from app.base.Arc2D import Arc2D
 from app.base.Line import Line
 from app.base.Point import Point
-from app.deformation.DeformationCalculatorBetweenTwoFlatDefScan import DeformationCalculatorBetweenTwoFlatDefScan
 from app.deformation.DeformationScan import DeformationScan
-from app.deformation.DeformationScanPlotterMPL import DeformationScanPlotterMPL
 from app.deformation.FlatDeformationScan import FlatDeformationScan
-from app.deformation.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
+from app.deformation.calculators.ChunkDeformationCalculatorBetweenTwoFlatDefScan import \
+    ChunkDeformationCalculatorBetweenTwoFlatDefScan
+from app.deformation.calculators.DeformationCalculatorBetweenTwoFlatDefScan import \
+    DeformationCalculatorBetweenTwoFlatDefScan
+from app.deformation.calculators.DeformationCalculatorByFlatDefScan import DeformationCalculatorByFlatDefScan
+from app.deformation.calculators.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
 from app.deformation.exporters.DeformationScaledColoredScanExporter import DeformationScaledColoredScanExporter
-from app.deformation.filters.DeformationScanSeparatorByMW import DeformationScanSeparatorByMW
+from app.deformation.filters.DeformationScanFilterByDeformationValue import DeformationScanFilterByDeformationValue
 from app.deformation.parsers.DeformationScanParserFormTxt import DeformationScanParserFormTxt
+from app.deformation.plotters.DeformationScanPlotterMPL import DeformationScanPlotterMPL
 from app.mine_workings.MineCrossSection import MineCrossSection
 from app.mine_workings.MineWorking import MineWorking
 from app.scan.Scan import Scan
@@ -71,50 +75,13 @@ mw_vto = MineWorking(*lines_vto, mine_cross_section=cs_vto, name="VTO")
 # fig_ax = mw_bdh.plot(is_show=False)
 # mw_vto.plot(fig_ax=fig_ax)
 
-def_scan1 = DeformationScan("БДШ023 20_03_25_BDH")
-def_scan2 = DeformationScan("БДШ023 16_04_25_BDH")
-def_scan1.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/БДШ023 20_03_25_BDH.txt")
-def_scan2.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/БДШ023 16_04_25_BDH.txt")
-print(def_scan1)
-print(def_scan2)
-
-def_scan1.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=100)
-def_scan2.filter_scan(filter_cls=ScanFilterDelimiter, delimiter=100)
-print(def_scan1)
-print(def_scan2)
-
-# def_scan1.plot(plotter=DeformationScanPlotterMPL, base_obj=mw_bdh)
-
-flat_ds1 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan1,
-                                                                                 mining_working=mw_bdh,
-                                                                                 get_point_in_mw_cs=False)
-flat_ds2 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan2,
-                                                                                 mining_working=mw_bdh,
-                                                                                 get_point_in_mw_cs=False)
-print(flat_ds1)
-print(flat_ds2)
-
-# flat_ds1.plot(plotter=DeformationScanPlotterMPL)
-
-flat_ds2.calculate_deformation(deformation_calculator=DeformationCalculatorBetweenTwoFlatDefScan,
-                               base_scan=flat_ds1)
-
-# flat_ds2.filter_scan(filter_cls=DeformationScanFilterByDeformationValue, max_deformation=0.2)
-flat_ds2.refresh_def()
-print(flat_ds1)
-print(flat_ds2)
-# flat_ds2.export_points_from_file(file_path="flat_def_result.txt", parser=DeformationScaledColoredScanExporter)
-
-# flat_ds2.plot(plotter=DeformationScanPlotterMPL)
-
-def_scan3 = flat_ds2.calculate_def_scan_by_base_obj()
-def_scan3.refresh_def()
-print(def_scan3)
-
-def_scan3.plot(plotter=DeformationScanPlotterMPL)
-
-
-
+scan1 = Scan("Scan1")
+scan1.load_points_from_file(file_path="src/diana/src/БДШ023 20_03_25сс.txt")
+def_scan1 = DeformationScan.create_def_scan_from_scan(scan=scan1)
+def_scan1.calculate_deformation(deformation_calculator=MiningWorkingDeformationCalculator,
+                                mining_working=mw_vto)
+def_scan1.export_points_from_file(file_path="src/diana/final/IL_БДШ023 20_03_25_VTO.txt",
+                                  parser=DeformationScaledColoredScanExporter)
 
 # ###### Разделение скана по выработкам ######
 #
@@ -131,3 +98,150 @@ def_scan3.plot(plotter=DeformationScanPlotterMPL)
 #     total_def_scan.add_point(point)
 # total_def_scan.refresh_def()
 # total_def_scan.export_points_from_file(f"{total_def_scan.name}.txt", parser=DeformationScaledColoredScanExporter)
+
+
+# def_scan1 = DeformationScan("БДШ023 20_03_25_BDH")
+# def_scan2 = DeformationScan("БДШ023 16_04_25_BDH")
+# def_scan3 = DeformationScan("БДШ023 20_03_25_VTO")
+# def_scan4 = DeformationScan("БДШ023 16_04_25_VTO")
+# # def_scan5 = DeformationScan("TOTAL_БДШ023 16_04_25_BDH")
+# # def_scan6 = DeformationScan("TOTAL_БДШ023 20_03_25_BDH.txt")
+# def_scan1.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 20_03_25_BDH.txt")
+# def_scan2.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 16_04_25_BDH.txt")
+# def_scan3.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 20_03_25_VTO.txt")
+# def_scan4.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 16_04_25_VTO.txt")
+# # print(def_scan1)
+# # print(def_scan2)
+
+# flat_ds1 = FlatDeformationScan("Flat_DS_БДШ023 20_03_25_BDH")
+# flat_ds1.load_points_from_file(file_path="src/diana/Flat_DS_БДШ023 20_03_25_BDH.txt")
+# flat_ds1.mining_working = mw_bdh
+#
+# flat_ds2 = FlatDeformationScan("Flat_DS_БДШ023 16_04_25_BDH")
+# flat_ds2.load_points_from_file(file_path="src/diana/Flat_DS_БДШ023 16_04_25_BDH.txt")
+# flat_ds2.mining_working = mw_bdh
+#
+# flat_ds2.calculate_deformation(deformation_calculator=ChunkDeformationCalculatorBetweenTwoFlatDefScan,
+#                                base_scan=flat_ds1,
+#                                chunk_length=0.5, chunk_offsets=0.2)
+# print(flat_ds2)
+# flat_ds2.export_points_from_file(f"DEF_{flat_ds2.name}.txt", parser=DeformationScaledColoredScanExporter)
+# # flat_ds2.plot(plotter=DeformationScanPlotterMPL)
+
+# flat_ds1 = FlatDeformationScan("Flat_DS_БДШ023 20_03_25_VTO")
+# flat_ds1.load_points_from_file(file_path="src/diana/Flat_DS_БДШ023 20_03_25_VTO.txt")
+# flat_ds1.mining_working = mw_vto
+#
+# flat_ds2 = FlatDeformationScan("Flat_DS_БДШ023 16_04_25_VTO")
+# flat_ds2.load_points_from_file(file_path="src/diana/Flat_DS_БДШ023 16_04_25_VTO.txt")
+# flat_ds2.mining_working = mw_vto
+#
+# flat_ds2.calculate_deformation(deformation_calculator=ChunkDeformationCalculatorBetweenTwoFlatDefScan,
+#                                base_scan=flat_ds1,
+#                                chunk_length=0.5, chunk_offsets=0.2)
+# print(flat_ds2)
+# flat_ds2.export_points_from_file(f"DEF_{flat_ds2.name}.txt", parser=DeformationScaledColoredScanExporter)
+# # flat_ds2.plot(plotter=DeformationScanPlotterMPL)
+
+
+
+
+
+
+# def_flat_vto = FlatDeformationScan("DEF_Flat_DS_БДШ023 20_03_25_VTO")
+# def_flat_vto.load_points_from_file(file_path="src/diana/DEF_Flat_DS_БДШ023 16_04_25_VTO.txt")
+# def_flat_vto.mining_working = mw_vto
+#
+# def_flat_bdh = FlatDeformationScan("DEF_Flat_DS_БДШ023 20_03_25_BDH")
+# def_flat_bdh.load_points_from_file(file_path="src/diana/DEF_Flat_DS_БДШ023 16_04_25_BDH.txt")
+# def_flat_bdh.mining_working = mw_bdh
+#
+# def_scan_bdh = DeformationScan("БДШ023 16_04_25_BDH")
+# def_scan_vto = DeformationScan("БДШ023 16_04_25_VTO")
+#
+# def_scan_bdh.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 16_04_25_BDH.txt")
+# def_scan_vto.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/seismic_cmap/БДШ023 16_04_25_VTO.txt")
+#
+# for point in def_scan_bdh:
+#     point.deformation = -1000
+#
+# def_scan_bdh.calculate_deformation(deformation_calculator=DeformationCalculatorByFlatDefScan,
+#                                    flat_def_scan=def_flat_bdh)
+# def_scan_bdh.export_points_from_file(f"NEW_{def_scan_bdh.name}.txt", parser=DeformationScaledColoredScanExporter)
+#
+# for point in def_scan_vto:
+#     point.deformation = -1000
+#
+# def_scan_vto.calculate_deformation(deformation_calculator=DeformationCalculatorByFlatDefScan,
+#                                    flat_def_scan=def_flat_vto)
+# def_scan_vto.export_points_from_file(f"NEW_{def_scan_vto.name}.txt", parser=DeformationScaledColoredScanExporter)
+
+# def_scan_bdh = DeformationScan("БДШ023 16_04_25_BDH")
+# def_scan_vto = DeformationScan("БДШ023 16_04_25_VTO")
+#
+# def_scan_bdh.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/final/NEW_БДШ023 16_04_25_BDH.txt")
+# def_scan_vto.load_points_from_file(parser=DeformationScanParserFormTxt, file_path="src/diana/final/NEW_БДШ023 16_04_25_VTO.txt")
+#
+# total_def_scan = deepcopy(def_scan_bdh)
+# total_def_scan.name = f"TOTAL_{total_def_scan.name}"
+# for point in def_scan_vto:
+#     total_def_scan.add_point(point)
+# total_def_scan.refresh_def()
+#
+# print(total_def_scan)
+#
+# total_def_scan.filter_scan(filter_cls=DeformationScanFilterByDeformationValue, max_deformation=0.01)
+# total_def_scan.refresh_def()
+#
+# total_def_scan.export_points_from_file(f"F_0.01_NEW_TOTAL_DEF_{total_def_scan.name}.txt",
+#                                        parser=DeformationScaledColoredScanExporter)
+# print(total_def_scan)
+
+
+
+
+
+# def_scan_vto = def_flat_vto.calculate_def_scan_by_base_obj()
+# def_scan_vto.refresh_def()
+# def_scan_vto.export_points_from_file(f"F_{def_scan_vto.name}.txt", parser=DeformationScaledColoredScanExporter)
+#
+# def_scan_bdh = def_flat_bdh.calculate_def_scan_by_base_obj()
+# def_scan_bdh.refresh_def()
+# def_scan_bdh.export_points_from_file(f"F_{def_scan_bdh.name}.txt", parser=DeformationScaledColoredScanExporter)
+#
+# total_def_scan = deepcopy(def_scan_bdh)
+# total_def_scan.name = f"TOTAL_{total_def_scan.name}"
+# for point in def_scan_vto:
+#     total_def_scan.add_point(point)
+# total_def_scan.refresh_def()
+# total_def_scan.export_points_from_file(f"TOTAL_DEF_{total_def_scan.name}.txt",
+#                                        parser=DeformationScaledColoredScanExporter)
+
+
+
+
+# def_scan1.export_points_from_file(f"{def_scan1.name}.txt", parser=DeformationScaledColoredScanExporter)
+# def_scan2.export_points_from_file(f"{def_scan2.name}.txt", parser=DeformationScaledColoredScanExporter)
+# def_scan3.export_points_from_file(f"{def_scan3.name}.txt", parser=DeformationScaledColoredScanExporter)
+# def_scan4.export_points_from_file(f"{def_scan4.name}.txt", parser=DeformationScaledColoredScanExporter)
+
+# flat_ds1 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan1,
+#                                                                                  mining_working=mw_bdh,
+#                                                                                  get_point_in_mw_cs=False)
+# flat_ds2 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan2,
+#                                                                                  mining_working=mw_bdh,
+#                                                                                  get_point_in_mw_cs=False)
+# flat_ds3 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan3,
+#                                                                                  mining_working=mw_vto,
+#                                                                                  get_point_in_mw_cs=False)
+# flat_ds4 = FlatDeformationScan.create_flat_def_scan_from_mining_working_def_scan(def_scan=def_scan4,
+#                                                                                  mining_working=mw_vto,
+#                                                                                  get_point_in_mw_cs=False)
+
+# flat_ds1.export_points_from_file(f"{flat_ds1.name}.txt", parser=DeformationScaledColoredScanExporter)
+# flat_ds2.export_points_from_file(f"{flat_ds2.name}.txt", parser=DeformationScaledColoredScanExporter)
+# flat_ds3.export_points_from_file(f"{flat_ds3.name}.txt", parser=DeformationScaledColoredScanExporter)
+# flat_ds4.export_points_from_file(f"{flat_ds4.name}.txt", parser=DeformationScaledColoredScanExporter)
+
+
+

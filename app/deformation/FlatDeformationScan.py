@@ -1,8 +1,9 @@
 import math
 
-from app.deformation.DeformationPoint import DeformationPoint
+from app.deformation.calculators.DeformationPoint import DeformationPoint
 from app.deformation.DeformationPointTransformatorToFlatCSOfMW import DeformationPointTransformatorToFlatCSOfMW
 from app.deformation.DeformationScan import DeformationScan
+from app.deformation.parsers.DeformationScanParserFormTxt import DeformationScanParserFormTxt
 from app.mine_workings.MineWorking import MineWorking
 
 
@@ -12,6 +13,9 @@ class FlatDeformationScan(DeformationScan):
         super().__init__(scan_name)
         self.base_scan = None
         self.mining_working = None
+
+    def load_points_from_file(self, file_path, parser=DeformationScanParserFormTxt):
+        super().load_points_from_file(file_path=file_path, parser=parser)
 
     def calculate_def_scan_by_base_obj(self):
         def_scan = DeformationScan(scan_name=f"DS_by_{self.name}")

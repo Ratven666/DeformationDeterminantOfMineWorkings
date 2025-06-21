@@ -1,4 +1,4 @@
-from app.deformation.DeformationPoint import DeformationPoint
+from app.deformation.calculators.DeformationPoint import DeformationPoint
 from app.deformation.DeformationScan import DeformationScan
 from app.scan.Scan import Scan
 from app.scan.parsers.ScanParserABC import ScanParserABC

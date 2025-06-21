@@ -1,5 +1,5 @@
 from app.base.Point import Point
-from app.deformation.DeformationPoint import DeformationPoint
+from app.deformation.calculators.DeformationPoint import DeformationPoint
 from app.mine_workings.MineWorking import MineWorking
 
 

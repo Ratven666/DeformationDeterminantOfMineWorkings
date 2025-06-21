@@ -1,13 +1,10 @@
-from matplotlib import pyplot as plt
-
 from app.base.Line import Line
 from app.base.Point import Point
 from app.deformation.DeformationScan import DeformationScan
-from app.deformation.DeformationScanPlotterMPL import DeformationScanPlotterMPL
-from app.deformation.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
+from app.deformation.plotters.DeformationScanPlotterMPL import DeformationScanPlotterMPL
+from app.deformation.calculators.MiningWorkingDeformationCalculator import MiningWorkingDeformationCalculator
 from app.mine_workings.MineWorking import MineWorking
 from app.scan.Scan import Scan
-from app.scan.filters.ScanFilerByLineClosing import ScanFilerByLineClosing
 from app.scan.filters.ScanFilterDelimiter import ScanFilterDelimiter
 
 scan = Scan("Test")
